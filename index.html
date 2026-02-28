@@ -204,7 +204,7 @@
 <body>
     <div class="paper">
         <h1>
-            <span id="titleMoon" title="新月">🌑</span> 
+            <span id="titleMoon" title="你的月亮">🌕</span> 
             留下你的声音<br>月亮是你的倾听者<br>回声是答案
         </h1>
         
@@ -323,7 +323,7 @@
                 quote.style.opacity = (1 - progress).toString();
                 
                 // 波浪形移动 - 手机版幅度稍微调小一点，避免出界
-                const waveAmplitude = 15; // 手机版用15px
+                const waveAmplitude = 24; // 手机版用15px
                 const waveSpeed = 0.002;
                 
                 // 水平方向也加一点波浪
@@ -397,7 +397,7 @@
                 blowingText.style.opacity = (1 - progress).toString();
                 
                 // 波浪形移动 - 手机版幅度调小
-                const waveAmplitude = 13; // 手机版13px
+                const waveAmplitude = 19; // 手机版13px
                 const waveSpeed = 0.0018;
                 
                 // 水平方向也加一点波浪
@@ -438,53 +438,6 @@
             });
         }
         
-        // 月相显示功能 - 根据农历日期
-        function updateMoonPhase() {
-            // 农历日期模拟（2026年正月十三 ≈ 3月1日）
-            // 简化版：用月份和日期组合模拟农历
-            const today = new Date();
-            
-            // 更精确的月相计算（基于农历）
-            function getMoonPhase() {
-                // 2026年春节是2月17日，所以正月十三是3月1日
-                // 农历每月15满月，30新月
-                const lunarDay = 13; // 今天是正月十三
-                
-                if (lunarDay >= 0 && lunarDay <= 2) return 0;      // 新月
-                if (lunarDay >= 3 && lunarDay <= 6) return 1;      // 蛾眉月
-                if (lunarDay >= 7 && lunarDay <= 8) return 2;      // 上弦月
-                if (lunarDay >= 9 && lunarDay <= 11) return 3;     // 盈凸月
-                if (lunarDay >= 12 && lunarDay <= 16) return 4;    // 满月（正月十三接近满月）
-                if (lunarDay >= 17 && lunarDay <= 20) return 5;    // 亏凸月
-                if (lunarDay >= 21 && lunarDay <= 23) return 6;    // 下弦月
-                return 7; // 残月
-            }
-            
-            const moonData = [
-                { emoji: "🌑", name: "新月" },
-                { emoji: "🌒", name: "蛾眉月" },
-                { emoji: "🌓", name: "上弦月" },
-                { emoji: "🌔", name: "盈凸月" },
-                { emoji: "🌕", name: "满月" },
-                { emoji: "🌖", name: "亏凸月" },
-                { emoji: "🌗", name: "下弦月" },
-                { emoji: "🌘", name: "残月" }
-            ];
-            
-            const phaseIndex = getMoonPhase();
-            
-            const titleMoon = document.getElementById('titleMoon');
-            const moonHint = document.getElementById('moonHint');
-            
-            if (titleMoon) {
-                titleMoon.textContent = moonData[phaseIndex].emoji;
-                titleMoon.title = `正月十三 · ${moonData[phaseIndex].name}`;
-            }
-            
-            if (moonHint) {
-                moonHint.textContent = `今日月相 · ${moonData[phaseIndex].name}`;
-            }
-        }
     </script>
 </body>
 </html>
