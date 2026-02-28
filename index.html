@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>silent roar</title>
+    <style>
+        /* 这里是样式 - 让页面好看 */
+        body {
+            background-color: #f5f0e7;  /* 旧纸张色 */
+            font-family: "KaiTi", "楷体", serif;  /* 楷体更有温度 */
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .paper {
+            max-width: 600px;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        /* 模仿纸张纹理 */
+        .paper::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.08"/></svg>');
+            pointer-events: none;
+            border-radius: 8px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            color: #4a4a4a;
+            margin-bottom: 30px;
+            font-weight: normal;
+            text-align: center;
+        }
+        
+        .quote-box {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f6f0;
+            border-left: 4px solid #d4b68a;
+            font-style: italic;
+            color: #5f4b3b;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin: 20px 0;
+            background: #fffef9;
+            resize: vertical;
+        }
+        
+        button {
+            background: #d4b68a;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #c1a177;
+        }
+        
+        .random-quote {
+            color: #7f6b5a;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="paper">
+        <h1>📝 这里没有回声，但你可以留下你的声音</h1>
+        
+        <!-- 随机句子显示区 -->
+        <div class="quote-box" id="quoteDisplay">
+            <p class="random-quote">“海浪拍打礁石的声音，只有海知道。”</p>
+        </div>
+        
+        <!-- 输入框 -->
+        <textarea id="userInput" placeholder="写下你想说的话... 它们会像风一样，来过就离开" rows="4"></textarea>
+        
+        <!-- 按钮区域 -->
+        <div style="text-align: center;">
+            <button onclick="showRandomQuote()">🌊 听一句海浪的低语</button>
+            <button onclick="clearInput()">🍃 让风带走</button>
+        </div>
+        
+        <p style="text-align: center; color: #aaa; font-size: 14px; margin-top: 30px;">
+            你的每一句话，都只留在这个页面里，关闭即消失
+        </p>
+    </div>
+
+    <script>
+        // 这里是功能代码
+        
+        // 温暖句子库
+        const quotes = [
+            "有时候，沉默是最响亮的回答。",
+            "海浪拍打礁石的声音，只有海知道。",
+            "夜空的星星从不说话，但它们一直在。",
+            "风会记得每一片叶子的颤动。",
+            "山谷不会回应，但它收纳所有回音。",
+            "你此刻的情绪，有人类共通的温度。",
+            "森林里最深的树，根系最安静。",
+            "今天的云，是天空写给大地的信。"
+        ];
+        
+        // 显示随机句子
+        function showRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById('quoteDisplay').innerHTML = 
+                `<p class="random-quote">“${quotes[randomIndex]}”</p>`;
+        }
+        
+        // 清空输入框
+        function clearInput() {
+            document.getElementById('userInput').value = '';
+        }
+        
+        // 可选：当输入框内容改变时，可以用颜色变化来"咆哮"
+        const textarea = document.getElementById('userInput');
+        textarea.addEventListener('input', function() {
+            // 打字越多，颜色越深（模仿情绪积累）
+            const length = this.value.length;
+            const intensity = Math.min(length * 2, 100);
+            this.style.backgroundColor = `rgba(212, 182, 138, ${intensity/500})`;
+        });
+    </script>
+</body>
+</html>
