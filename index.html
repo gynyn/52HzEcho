@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>silent roar</title>
+    <title>52HzEcho</title>
     <style>
         /* 这里是样式 - 让页面好看 */
         body {
-            background-color: #f5f0e7;  /* 旧纸张色 */
-            font-family: "KaiTi", "楷体", serif;  /* 楷体更有温度 */
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+             background-color: #1a237e;  /* 深蓝色夜空 */
+             background-image: radial-gradient(circle at 30% 40%, #fff9c4 1px, transparent 1px), 
+                      radial-gradient(circle at 70% 60%, #fff9c4 1px, transparent 1px);
+             background-size: 100px 100px, 150px 150px;  /* 星星效果 */
+             font-family: "KaiTi", "楷体", serif;
+             min-height: 100vh;
+             margin: 0;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             padding: 20px;
+}
         
         .paper {
             max-width: 600px;
@@ -92,20 +95,20 @@
 </head>
 <body>
     <div class="paper">
-        <h1>📝 这里没有回声，但你可以留下你的声音</h1>
+        <h1>📝 留下你的声音，月亮是你的倾听者，回声是答案</h1>
         
         <!-- 随机句子显示区 -->
         <div class="quote-box" id="quoteDisplay">
-            <p class="random-quote">“海浪拍打礁石的声音，只有海知道。”</p>
+            <p class="random-quote">“所有频率的声音，月亮都听见了。”</p>
         </div>
         
         <!-- 输入框 -->
-        <textarea id="userInput" placeholder="写下你想说的话... 它们会像风一样，来过就离开" rows="4"></textarea>
+        <textarea id="userInput" placeholder="写下你想说的话... 它们会像风一样，来过就离开，Echo世界只在乎你的声音" rows="4"></textarea>
         
         <!-- 按钮区域 -->
         <div style="text-align: center;">
-            <button onclick="showRandomQuote()">🌊 听一句海浪的低语</button>
-            <button onclick="clearInput()">🍃 让风带走</button>
+            <button onclick="showRandomQuote(); startFloatingEffect();">🌕 听，回声</button>
+            <button onclick="blowAwayText();">🍃 让风带走</button>
         </div>
         
         <p style="text-align: center; color: #aaa; font-size: 14px; margin-top: 30px;">
@@ -115,39 +118,279 @@
 
     <script>
         // 这里是功能代码
-        
-        // 温暖句子库
-        const quotes = [
-            "有时候，沉默是最响亮的回答。",
-            "海浪拍打礁石的声音，只有海知道。",
-            "夜空的星星从不说话，但它们一直在。",
-            "风会记得每一片叶子的颤动。",
-            "山谷不会回应，但它收纳所有回音。",
-            "你此刻的情绪，有人类共通的温度。",
-            "森林里最深的树，根系最安静。",
-            "今天的云，是天空写给大地的信。"
+   
+        // 月亮诗词与名言库
+        const moonQuotes = [
+            // 古诗词部分
+            "但愿人长久，千里共婵娟。 ——苏轼",
+            "海上生明月，天涯共此时。 ——张九龄",
+            "江畔何人初见月？江月何年初照人？ ——张若虚",
+            "人生代代无穷已，江月年年望相似。 ——张若虚",
+            "露从今夜白，月是故乡明。 ——杜甫",
+            "明月出天山，苍茫云海间。 ——李白",
+            "举杯邀明月，对影成三人。 ——李白",
+            "我寄愁心与明月，随君直到夜郎西。 ——李白",
+            "今人不见古时月，今月曾经照古人。 ——李白",
+            "月上柳梢头，人约黄昏后。 ——欧阳修",
+            "当时明月在，曾照彩云归。 ——晏几道",
+            "二十四桥明月夜，玉人何处教吹箫？ ——杜牧",
+            "淮水东边旧时月，夜深还过女墙来。 ——刘禹锡",
+            "今夜月明人尽望，不知秋思落谁家。 ——王建",
+            "明月楼高休独倚，酒入愁肠，化作相思泪。 ——范仲淹",
+            "舞低杨柳楼心月，歌尽桃花扇底风。 ——晏几道",
+            "多情只有春庭月，犹为离人照落花。 ——张泌",
+            "同来望月人何处？风景依稀似去年。 ——赵嘏",
+            "三五夜中新月色，二千里外故人心。 ——白居易",
+            "共看明月应垂泪，一夜乡心五处同。 ——白居易",
+            
+            // 现代句子
+            "月亮是夜晚的伤口，每颗星星都是血滴。 ——罗伯特·瓦尔泽",
+            "我们各自攀爬自己的月亮。 ——余秀华",
+            "月亮啊月亮，你能照见南边，也能照见北边，照见他，就跟他说一声，就说我想他了。 ——民间歌谣",
+            "我靠在墙上，而你走近，后来，窗外就有了月亮。 ——木心",
+            "今晚的月亮很像你，温柔又遥远。",
+            "月亮不会奔你而来，但它永远在天上，静静陪着每一个不眠的人。",
+            "所有频率的声音，月亮都听见了。",
+            "月亮的圆缺，是人类情绪的潮汐。",
+            "当你凝视月亮时，月亮也在凝视你的孤独。",
+            "月亮是最高级的倾听者，它从不打断，只是安静地亮着。",
+            
+            // 禅意短句
+            "月印万川，悲喜同源。",
+            "千江有水千江月，万里无云万里天。",
+            "月亮啊，你不说话，就是最好的回答。",
+            "今晚月色真美。（夏目漱石）",
+            "我把心事说给月亮，月亮把它变成月光，洒在你身上。"
         ];
         
         // 显示随机句子
         function showRandomQuote() {
-            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const randomIndex = Math.floor(Math.random() * moonQuotes.length);
             document.getElementById('quoteDisplay').innerHTML = 
-                `<p class="random-quote">“${quotes[randomIndex]}”</p>`;
+                `<p class="random-quote" id="floatingQuote">“${moonQuotes[randomIndex]}”</p>`;
         }
         
-        // 清空输入框
+        // 🌊 让月亮诗句飘动（扔石子效果）
+        function startFloatingEffect() {
+            const quote = document.getElementById('floatingQuote');
+            
+            if (!quote) {
+                showRandomQuote();
+                setTimeout(startFloatingEffect, 100);
+                return;
+            }
+            
+            // 如果已经有动画在运行，先停止
+            if (quote._animationId) {
+                cancelAnimationFrame(quote._animationId);
+            }
+            
+            // 初始化设置
+            quote.style.position = 'relative';
+            quote.style.left = '0px';
+            quote.style.top = '0px';
+            quote.style.transition = 'opacity 0.3s, font-size 0.3s';
+            
+            let x = 0;
+            let y = 0;
+            let speedX = 2 + Math.random() * 2;
+            let speedY = 1.5 + Math.random() * 2;
+            let fontSize = 18;
+            let opacity = 1;
+            let hitCount = 0;
+            
+            const container = document.querySelector('.paper');
+            const containerWidth = container.clientWidth - 100;
+            const containerHeight = container.clientHeight - 150;
+            
+            function move() {
+                x += speedX;
+                y += speedY;
+                
+                // 边界碰撞检测
+                if (x >= containerWidth || x <= 0) {
+                    speedX = -speedX;
+                    hitCount++;
+                    fontSize = Math.max(10, fontSize - 2);
+                    opacity = Math.max(0.1, opacity - 0.15);
+                    quote.style.fontSize = fontSize + 'px';
+                    quote.style.opacity = opacity;
+                    
+                    if (hitCount >= 6) {
+                        quote.style.opacity = '0';
+                        cancelAnimationFrame(quote._animationId);
+                        setTimeout(() => {
+                            if (document.getElementById('floatingQuote')) {
+                                document.getElementById('quoteDisplay').innerHTML = 
+                                    '<p class="random-quote" style="text-align: center; opacity: 0.6;">🌕 回声散去了...月亮一直在。</p>';
+                            }
+                        }, 1000);
+                        return;
+                    }
+                }
+                
+                if (y >= containerHeight || y <= 0) {
+                    speedY = -speedY;
+                    hitCount++;
+                    fontSize = Math.max(10, fontSize - 2);
+                    opacity = Math.max(0.1, opacity - 0.15);
+                    quote.style.fontSize = fontSize + 'px';
+                    quote.style.opacity = opacity;
+                    
+                    if (hitCount >= 6) {
+                        quote.style.opacity = '0';
+                        cancelAnimationFrame(quote._animationId);
+                        setTimeout(() => {
+                            if (document.getElementById('floatingQuote')) {
+                                document.getElementById('quoteDisplay').innerHTML = 
+                                    '<p class="random-quote" style="text-align: center; opacity: 0.6;">🌕 回声散去了...月亮一直在。</p>';
+                            }
+                        }, 1000);
+                        return;
+                    }
+                }
+                
+                quote.style.left = x + 'px';
+                quote.style.top = y + 'px';
+                
+                quote._animationId = requestAnimationFrame(move);
+            }
+            
+            move();
+        }
+        
+        // 🌪️ 让输入的文字飘走（让风带走效果）
+        function blowAwayText() {
+            const input = document.getElementById('userInput');
+            const userText = input.value.trim();
+            
+            if (userText === '') {
+                // 如果没输入文字，显示提示
+                document.getElementById('quoteDisplay').innerHTML = 
+                    '<p class="random-quote" style="text-align: center; color: #d4b68a;">🍃 还没有心事可以带走...</p>';
+                return;
+            }
+            
+            // 保存用户输入的文字
+            const textToBlow = userText;
+            
+            // 清空输入框
+            input.value = '';
+            
+            // 在quoteDisplay区域创建飘动的文字
+            document.getElementById('quoteDisplay').innerHTML = 
+                `<p class="random-quote" id="blowingText">“${textToBlow}”</p>`;
+            
+            const blowingText = document.getElementById('blowingText');
+            
+            // 初始化设置
+            blowingText.style.position = 'relative';
+            blowingText.style.left = '0px';
+            blowingText.style.top = '0px';
+            blowingText.style.transition = 'opacity 0.3s, font-size 0.3s';
+            blowingText.style.color = '#7f6b5a';  // 用不同颜色区分
+            
+            let x = 0;
+            let y = 0;
+            let speedX = 1.5 + Math.random() * 2;  // 比诗句飘得慢一点，更轻柔
+            let speedY = 1 + Math.random() * 2;
+            let fontSize = 16;  // 稍小一点
+            let opacity = 1;
+            let hitCount = 0;
+            
+            const container = document.querySelector('.paper');
+            const containerWidth = container.clientWidth - 100;
+            const containerHeight = container.clientHeight - 150;
+            
+            function move() {
+                x += speedX;
+                y += speedY;
+                
+                // 边界碰撞检测
+                if (x >= containerWidth || x <= 0) {
+                    speedX = -speedX;
+                    hitCount++;
+                    fontSize = Math.max(8, fontSize - 2);  // 最小字号8px
+                    opacity = Math.max(0.1, opacity - 0.15);
+                    blowingText.style.fontSize = fontSize + 'px';
+                    blowingText.style.opacity = opacity;
+                    
+                    if (hitCount >= 6) {
+                        blowingText.style.opacity = '0';
+                        cancelAnimationFrame(blowingText._animationId);
+                        setTimeout(() => {
+                            if (document.getElementById('blowingText')) {
+                                document.getElementById('quoteDisplay').innerHTML = 
+                                    '<p class="random-quote" style="text-align: center; opacity: 0.6;">🍃 心事随风飘散了...</p>';
+                            }
+                        }, 1000);
+                        return;
+                    }
+                }
+                
+                if (y >= containerHeight || y <= 0) {
+                    speedY = -speedY;
+                    hitCount++;
+                    fontSize = Math.max(8, fontSize - 2);
+                    opacity = Math.max(0.1, opacity - 0.15);
+                    blowingText.style.fontSize = fontSize + 'px';
+                    blowingText.style.opacity = opacity;
+                    
+                    if (hitCount >= 6) {
+                        blowingText.style.opacity = '0';
+                        cancelAnimationFrame(blowingText._animationId);
+                        setTimeout(() => {
+                            if (document.getElementById('blowingText')) {
+                                document.getElementById('quoteDisplay').innerHTML = 
+                                    '<p class="random-quote" style="text-align: center; opacity: 0.6;">🍃 心事随风飘散了...</p>';
+                            }
+                        }, 1000);
+                        return;
+                    }
+                }
+                
+                blowingText.style.left = x + 'px';
+                blowingText.style.top = y + 'px';
+                
+                blowingText._animationId = requestAnimationFrame(move);
+            }
+            
+            move();
+        }
+        
+        // 清空输入框（原来的功能保留）
         function clearInput() {
             document.getElementById('userInput').value = '';
         }
         
-        // 可选：当输入框内容改变时，可以用颜色变化来"咆哮"
+        // 打字效果（情绪颜色）
         const textarea = document.getElementById('userInput');
-        textarea.addEventListener('input', function() {
-            // 打字越多，颜色越深（模仿情绪积累）
-            const length = this.value.length;
-            const intensity = Math.min(length * 2, 100);
-            this.style.backgroundColor = `rgba(212, 182, 138, ${intensity/500})`;
-        });
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                const length = this.value.length;
+                const intensity = Math.min(length * 2, 100);
+                this.style.backgroundColor = `rgba(212, 182, 138, ${intensity/500})`;
+            });
+        }
     </script>
+
+    <!-- 悄悄加一个月相图标 -->
+<div style="text-align: center; margin-top: 10px; opacity: 0.3;">
+    <span id="moonPhase">🌑</span>
+</div>
+
+<script>
+    // 根据日期显示不同月相（小彩蛋）
+    function getMoonPhase() {
+        const phases = ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"];
+        const today = new Date();
+        const day = today.getDate();
+        // 简单用日期模拟月相（农历每月十五左右满月）
+        const phaseIndex = Math.floor((day % 30) / 3.75) % 8;
+        document.getElementById('moonPhase').textContent = phases[phaseIndex];
+    }
+    getMoonPhase();
+</script>
+
 </body>
 </html>
