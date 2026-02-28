@@ -107,8 +107,8 @@
         
         <!-- 按钮区域 -->
         <div style="text-align: center;">
-            <button onclick="showRandomQuote(); startFloatingEffect();">🌕 听，回声</button>
-            <button onclick="blowAwayText();">🍃 让风带走</button>
+            <button onclick="showRandomQuote(); startRippleEffect();">🌕 听，回声</button>
+            <button onclick="blowAwayRipple();">🍃 让风带走</button>
         </div>
         
         <p style="text-align: center; color: #aaa; font-size: 14px; margin-top: 30px;">
@@ -117,8 +117,6 @@
     </div>
 
     <script>
-        // 这里是功能代码
-   
         // 月亮诗词与名言库
         const moonQuotes = [
             // 古诗词部分
@@ -159,7 +157,7 @@
             "月印万川，悲喜同源。",
             "千江有水千江月，万里无云万里天。",
             "月亮啊，你不说话，就是最好的回答。",
-            "今晚月色真美。（夏目漱石）",
+            "今晚月色真美。——夏目漱石",
             "我把心事说给月亮，月亮把它变成月光，洒在你身上。"
         ];
         
@@ -170,195 +168,179 @@
                 `<p class="random-quote" id="floatingQuote">“${moonQuotes[randomIndex]}”</p>`;
         }
         
-        // 🌊 让月亮诗句飘动（扔石子效果）
-        function startFloatingEffect() {
+        // 🌊 水波荡漾效果（扔石子）
+        function startRippleEffect() {
             const quote = document.getElementById('floatingQuote');
             
             if (!quote) {
                 showRandomQuote();
-                setTimeout(startFloatingEffect, 100);
+                setTimeout(startRippleEffect, 100);
                 return;
             }
             
-            // 如果已经有动画在运行，先停止
-            if (quote._animationId) {
-                cancelAnimationFrame(quote._animationId);
+            // 停止之前的动画
+            if (quote._animationTimer) {
+                clearInterval(quote._animationTimer);
+                clearTimeout(quote._timeout);
             }
             
-            // 初始化设置
+            // 重置样式
             quote.style.position = 'relative';
             quote.style.left = '0px';
             quote.style.top = '0px';
-            quote.style.transition = 'opacity 0.3s, font-size 0.3s';
+            quote.style.fontSize = '18px';  // 固定字号
+            quote.style.opacity = '1';
+            quote.style.transition = 'opacity 0.3s ease';
             
-            let x = 0;
-            let y = 0;
-            let speedX = 2 + Math.random() * 2;
-            let speedY = 1.5 + Math.random() * 2;
-            let fontSize = 18;
-            let opacity = 1;
-            let hitCount = 0;
+            // 水波纹参数
+            let startTime = Date.now();
+            const duration = 9000; // 9秒
             
-            const container = document.querySelector('.paper');
-            const containerWidth = container.clientWidth - 100;
-            const containerHeight = container.clientHeight - 150;
-            
-            function move() {
-                x += speedX;
-                y += speedY;
+            // 用 requestAnimationFrame 实现平滑透明度变化
+            function fadeOut() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1); // 0 -> 1
                 
-                // 边界碰撞检测
-                if (x >= containerWidth || x <= 0) {
-                    speedX = -speedX;
-                    hitCount++;
-                    fontSize = Math.max(10, fontSize - 2);
-                    opacity = Math.max(0.1, opacity - 0.15);
-                    quote.style.fontSize = fontSize + 'px';
-                    quote.style.opacity = opacity;
-                    
-                    if (hitCount >= 6) {
-                        quote.style.opacity = '0';
-                        cancelAnimationFrame(quote._animationId);
-                        setTimeout(() => {
-                            if (document.getElementById('floatingQuote')) {
-                                document.getElementById('quoteDisplay').innerHTML = 
-                                    '<p class="random-quote" style="text-align: center; opacity: 0.6;">🌕 回声散去了...月亮一直在。</p>';
-                            }
-                        }, 1000);
-                        return;
-                    }
+                // 透明度从1逐渐降到0
+                quote.style.opacity = (1 - progress).toString();
+                
+                if (progress < 1) {
+                    quote._animationFrame = requestAnimationFrame(fadeOut);
+                } else {
+                    // 9秒后完全消失
+                    quote.style.opacity = '0';
+                    setTimeout(() => {
+                        if (document.getElementById('floatingQuote')) {
+                            document.getElementById('quoteDisplay').innerHTML = 
+                                '<p class="random-quote" style="text-align: center; opacity: 0.6;">🌕 回声散去了...月亮一直在。</p>';
+                        }
+                    }, 500);
                 }
-                
-                if (y >= containerHeight || y <= 0) {
-                    speedY = -speedY;
-                    hitCount++;
-                    fontSize = Math.max(10, fontSize - 2);
-                    opacity = Math.max(0.1, opacity - 0.15);
-                    quote.style.fontSize = fontSize + 'px';
-                    quote.style.opacity = opacity;
-                    
-                    if (hitCount >= 6) {
-                        quote.style.opacity = '0';
-                        cancelAnimationFrame(quote._animationId);
-                        setTimeout(() => {
-                            if (document.getElementById('floatingQuote')) {
-                                document.getElementById('quoteDisplay').innerHTML = 
-                                    '<p class="random-quote" style="text-align: center; opacity: 0.6;">🌕 回声散去了...月亮一直在。</p>';
-                            }
-                        }, 1000);
-                        return;
-                    }
-                }
-                
-                quote.style.left = x + 'px';
-                quote.style.top = y + 'px';
-                
-                quote._animationId = requestAnimationFrame(move);
             }
             
-            move();
+            // 启动淡出动画
+            quote._animationFrame = requestAnimationFrame(fadeOut);
+            
+            // 添加轻微的上下浮动（水波感）
+            let floatOffset = 0;
+            let floatDirection = 1;
+            
+            function floatWave() {
+                if (!quote || !quote.style) return;
+                
+                floatOffset += floatDirection * 0.2;
+                if (floatOffset > 3 || floatOffset < -3) {
+                    floatDirection *= -1;
+                }
+                
+                // 微微上下移动，像水波荡漾
+                quote.style.transform = `translateY(${floatOffset}px)`;
+                
+                quote._waveTimer = requestAnimationFrame(floatWave);
+            }
+            
+            // 启动浮动效果
+            quote._waveTimer = requestAnimationFrame(floatWave);
+            
+            // 9秒后停止浮动
+            quote._timeout = setTimeout(() => {
+                if (quote._waveTimer) {
+                    cancelAnimationFrame(quote._waveTimer);
+                }
+            }, duration);
         }
         
-        // 🌪️ 让输入的文字飘走（让风带走效果）
-        function blowAwayText() {
+        // 🌊 水波荡漾效果（让风带走 - 用户输入的文字）
+        function blowAwayRipple() {
             const input = document.getElementById('userInput');
             const userText = input.value.trim();
             
             if (userText === '') {
-                // 如果没输入文字，显示提示
                 document.getElementById('quoteDisplay').innerHTML = 
                     '<p class="random-quote" style="text-align: center; color: #d4b68a;">🍃 还没有心事可以带走...</p>';
                 return;
             }
             
-            // 保存用户输入的文字
+            // 保存用户输入
             const textToBlow = userText;
             
             // 清空输入框
             input.value = '';
             
-            // 在quoteDisplay区域创建飘动的文字
+            // 创建飘动的文字
             document.getElementById('quoteDisplay').innerHTML = 
                 `<p class="random-quote" id="blowingText">“${textToBlow}”</p>`;
             
             const blowingText = document.getElementById('blowingText');
             
-            // 初始化设置
+            // 停止之前的动画
+            if (blowingText._animationTimer) {
+                clearInterval(blowingText._animationTimer);
+                clearTimeout(blowingText._timeout);
+            }
+            
+            // 重置样式
             blowingText.style.position = 'relative';
             blowingText.style.left = '0px';
             blowingText.style.top = '0px';
-            blowingText.style.transition = 'opacity 0.3s, font-size 0.3s';
-            blowingText.style.color = '#7f6b5a';  // 用不同颜色区分
+            blowingText.style.fontSize = '16px';  // 固定字号
+            blowingText.style.opacity = '1';
+            blowingText.style.transition = 'opacity 0.3s ease';
+            blowingText.style.color = '#7f6b5a';
             
-            let x = 0;
-            let y = 0;
-            let speedX = 1.5 + Math.random() * 2;  // 比诗句飘得慢一点，更轻柔
-            let speedY = 1 + Math.random() * 2;
-            let fontSize = 16;  // 稍小一点
-            let opacity = 1;
-            let hitCount = 0;
+            // 淡出动画
+            let startTime = Date.now();
+            const duration = 9000; // 也是9秒
             
-            const container = document.querySelector('.paper');
-            const containerWidth = container.clientWidth - 100;
-            const containerHeight = container.clientHeight - 150;
-            
-            function move() {
-                x += speedX;
-                y += speedY;
+            function fadeOut() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
                 
-                // 边界碰撞检测
-                if (x >= containerWidth || x <= 0) {
-                    speedX = -speedX;
-                    hitCount++;
-                    fontSize = Math.max(8, fontSize - 2);  // 最小字号8px
-                    opacity = Math.max(0.1, opacity - 0.15);
-                    blowingText.style.fontSize = fontSize + 'px';
-                    blowingText.style.opacity = opacity;
-                    
-                    if (hitCount >= 6) {
-                        blowingText.style.opacity = '0';
-                        cancelAnimationFrame(blowingText._animationId);
-                        setTimeout(() => {
-                            if (document.getElementById('blowingText')) {
-                                document.getElementById('quoteDisplay').innerHTML = 
-                                    '<p class="random-quote" style="text-align: center; opacity: 0.6;">🍃 心事随风飘散了...</p>';
-                            }
-                        }, 1000);
-                        return;
-                    }
+                blowingText.style.opacity = (1 - progress).toString();
+                
+                if (progress < 1) {
+                    blowingText._animationFrame = requestAnimationFrame(fadeOut);
+                } else {
+                    blowingText.style.opacity = '0';
+                    setTimeout(() => {
+                        if (document.getElementById('blowingText')) {
+                            document.getElementById('quoteDisplay').innerHTML = 
+                                '<p class="random-quote" style="text-align: center; opacity: 0.6;">🍃 心事随风散去了...</p>';
+                        }
+                    }, 500);
                 }
-                
-                if (y >= containerHeight || y <= 0) {
-                    speedY = -speedY;
-                    hitCount++;
-                    fontSize = Math.max(8, fontSize - 2);
-                    opacity = Math.max(0.1, opacity - 0.15);
-                    blowingText.style.fontSize = fontSize + 'px';
-                    blowingText.style.opacity = opacity;
-                    
-                    if (hitCount >= 6) {
-                        blowingText.style.opacity = '0';
-                        cancelAnimationFrame(blowingText._animationId);
-                        setTimeout(() => {
-                            if (document.getElementById('blowingText')) {
-                                document.getElementById('quoteDisplay').innerHTML = 
-                                    '<p class="random-quote" style="text-align: center; opacity: 0.6;">🍃 心事随风飘散了...</p>';
-                            }
-                        }, 1000);
-                        return;
-                    }
-                }
-                
-                blowingText.style.left = x + 'px';
-                blowingText.style.top = y + 'px';
-                
-                blowingText._animationId = requestAnimationFrame(move);
             }
             
-            move();
+            blowingText._animationFrame = requestAnimationFrame(fadeOut);
+            
+            // 水波浮动
+            let floatOffset = 0;
+            let floatDirection = 1;
+            
+            function floatWave() {
+                if (!blowingText || !blowingText.style) return;
+                
+                floatOffset += floatDirection * 0.15; // 更轻柔的浮动
+                if (floatOffset > 2 || floatOffset < -2) {
+                    floatDirection *= -1;
+                }
+                
+                blowingText.style.transform = `translateY(${floatOffset}px)`;
+                
+                blowingText._waveTimer = requestAnimationFrame(floatWave);
+            }
+            
+            blowingText._waveTimer = requestAnimationFrame(floatWave);
+            
+            // 9秒后停止
+            blowingText._timeout = setTimeout(() => {
+                if (blowingText._waveTimer) {
+                    cancelAnimationFrame(blowingText._waveTimer);
+                }
+            }, duration);
         }
         
-        // 清空输入框（原来的功能保留）
+        // 清空输入框
         function clearInput() {
             document.getElementById('userInput').value = '';
         }
@@ -379,17 +361,28 @@
     <span id="moonPhase">🌑</span>
 </div>
 
+<!-- 月相小彩蛋 -->
+<div style="text-align: center; margin-top: 20px; opacity: 0.3; font-size: 24px;" id="moonPhase">
+    🌑
+</div>
+
 <script>
-    // 根据日期显示不同月相（小彩蛋）
-    function getMoonPhase() {
-        const phases = ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"];
+    // 月相显示功能
+    function updateMoonPhase() {
+        const moonEmojis = ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"];
         const today = new Date();
+        // 农历日期模拟：每个月15号左右是满月
         const day = today.getDate();
-        // 简单用日期模拟月相（农历每月十五左右满月）
+        // 将一个月30天分成8个阶段，每个阶段约3.75天
         const phaseIndex = Math.floor((day % 30) / 3.75) % 8;
-        document.getElementById('moonPhase').textContent = phases[phaseIndex];
+        document.getElementById('moonPhase').textContent = moonEmojis[phaseIndex];
     }
-    getMoonPhase();
+    
+    // 页面加载时更新月相
+    updateMoonPhase();
+    
+    // 也可以每分钟检查一次（如果需要自动更新）
+    // setInterval(updateMoonPhase, 60000);
 </script>
 
 </body>
