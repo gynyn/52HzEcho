@@ -2,34 +2,45 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>52HzEcho</title>
     <style>
-        /* 这里是样式 - 让页面好看 */
-        body {
-             background-color: #1a237e;  /* 深蓝色夜空 */
-             background-image: radial-gradient(circle at 30% 40%, #fff9c4 1px, transparent 1px), 
-                      radial-gradient(circle at 70% 60%, #fff9c4 1px, transparent 1px);
-             background-size: 100px 100px, 150px 150px;  /* 星星效果 */
-             font-family: "KaiTi", "楷体", serif;
-             min-height: 100vh;
-             margin: 0;
-             display: flex;
-             justify-content: center;
-             align-items: center;
-             padding: 20px;
-}
-        
-        .paper {
-            max-width: 600px;
-            background: white;
-            padding: 40px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            position: relative;
+        /* 基础重置 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
         
-        /* 模仿纸张纹理 */
+        body {
+            background-color: #1a1f2e;  /* 深色夜空 */
+            font-family: "KaiTi", "楷体", "PingFang SC", "Microsoft YaHei", serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            margin: 0;
+            background-image: radial-gradient(circle at 20% 30%, #2a3344 1px, transparent 1px),
+                              radial-gradient(circle at 80% 70%, #2a3344 1px, transparent 1px);
+            background-size: 40px 40px, 60px 60px;
+        }
+        
+        /* 主卡片 - 完美适配手机 */
+        .paper {
+            width: 100%;
+            max-width: 400px;  /* 手机最大宽度 */
+            background: rgba(255, 250, 240, 0.95);  /* 柔和的米白 */
+            backdrop-filter: blur(5px);
+            padding: 24px 20px;
+            border-radius: 32px;  /* 更大的圆角 */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(212, 182, 138, 0.3);
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        /* 纸张纹理 */
         .paper::before {
             content: "";
             position: absolute;
@@ -37,66 +48,165 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.08"/></svg>');
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.03"/></svg>');
             pointer-events: none;
-            border-radius: 8px;
+            border-radius: 32px;
         }
         
+        /* 标题区域 */
         h1 {
-            font-size: 24px;
+            font-size: 20px;  /* 手机适中字号 */
             color: #4a4a4a;
-            margin-bottom: 30px;
-            font-weight: normal;
+            margin-bottom: 20px;
+            font-weight: 400;
             text-align: center;
+            line-height: 1.4;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
         }
         
+        /* 标题中的月亮 */
+        #titleMoon {
+            font-size: 28px;
+            display: inline-block;
+            cursor: help;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(212, 182, 138, 0.3));
+            vertical-align: middle;
+        }
+        
+        #titleMoon:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        /* 诗句显示区 */
         .quote-box {
-            margin: 30px 0;
-            padding: 20px;
-            background: #f9f6f0;
+            margin: 20px 0 16px;
+            padding: 20px 16px;
+            background: rgba(249, 246, 240, 0.8);
             border-left: 4px solid #d4b68a;
+            border-radius: 16px;
             font-style: italic;
             color: #5f4b3b;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
         }
         
+        .random-quote {
+            color: #5f4b3b;
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 0;
+            text-align: center;
+            word-break: break-word;
+            width: 100%;
+        }
+        
+        /* 输入框 */
         textarea {
             width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 16px;
+            border: 1px solid #e8e0d5;
+            border-radius: 20px;
             font-size: 16px;
             box-sizing: border-box;
-            margin: 20px 0;
+            margin: 16px 0 20px;
             background: #fffef9;
             resize: vertical;
+            font-family: inherit;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+            min-height: 100px;
         }
         
+        textarea:focus {
+            outline: none;
+            border-color: #d4b68a;
+            box-shadow: 0 4px 16px rgba(212, 182, 138, 0.15);
+        }
+        
+        /* 按钮容器 - 改用flex布局，手机友好 */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0 16px;
+        }
+        
+        /* 按钮样式 */
         button {
             background: #d4b68a;
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        
-        button:hover {
-            background: #c1a177;
-        }
-        
-        .random-quote {
-            color: #7f6b5a;
+            padding: 16px 20px;
+            border-radius: 40px;  /* 更圆润 */
             font-size: 18px;
-            line-height: 1.6;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(212, 182, 138, 0.3);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+            background: #c1a177;
+            box-shadow: 0 2px 6px rgba(193, 161, 119, 0.4);
+        }
+        
+        /* 让两个按钮视觉上区分 */
+        button:first-child {
+            background: #b39b7c;
+        }
+        
+        button:last-child {
+            background: #9f8b72;
+        }
+        
+        /* 底部提示文字 */
+        .footnote {
+            text-align: center;
+            color: #aaa;
+            font-size: 13px;
+            margin-top: 16px;
+            border-top: 1px dashed #e0d9d0;
+            padding-top: 16px;
+        }
+        
+        /* 月相名称小提示（可选） */
+        .moon-hint {
+            text-align: center;
+            color: #b39b7c;
+            font-size: 12px;
+            margin-top: 8px;
+            opacity: 0.6;
+        }
+        
+        /* 涟漪散去的提示样式 */
+        .quote-box p:last-child {
+            color: #b39b7c;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
     <div class="paper">
         <h1>
-            <span id="titleMoon">🌑</span> 留下你的声音，月亮是你的倾听者，回声是答案</h1>
+            <span id="titleMoon" title="新月">🌑</span> 
+            留下你的声音，月亮是你的倾听者，回声是答案
+        </h1>
         
         <!-- 随机句子显示区 -->
         <div class="quote-box" id="quoteDisplay">
@@ -104,18 +214,25 @@
         </div>
         
         <!-- 输入框 -->
-        <textarea id="userInput" placeholder="写下你想说的话... 它们会像风一样，来过就离开，Echo世界只在乎你的声音" rows="4"></textarea>
+        <textarea id="userInput" placeholder="写下你想说的话... 像风一样来过就离开，Echo世界只在乎你的声音" rows="4"></textarea>
         
-        <!-- 按钮区域 -->
-        <div style="text-align: center;">
-            <button onclick="showRandomQuote(); startRippleEffect();">🌕 听，回声</button>
-            <button onclick="blowAwayRipple();">🍃 让风带走</button>
+        <!-- 按钮区域 - 改用flex垂直排列 -->
+        <div class="button-group">
+            <button onclick="showRandomQuote(); startRippleEffect();">
+                <span>🌕</span> 听，回声
+            </button>
+            <button onclick="blowAwayRipple();">
+                <span>🍃</span> 让风带走
+            </button>
         </div>
         
-        <p style="text-align: center; color: #aaa; font-size: 14px; margin-top: 30px;">
+        <div class="footnote">
             你的每一句话，都只留在这个页面里，关闭即消失
-        </p>
+        </div>
     </div>
+
+    <!-- 轻量的月相提示（可选的） -->
+    <div class="moon-hint" id="moonHint"></div>
 
     <script>
         // 月亮诗词与名言库
@@ -158,7 +275,7 @@
             "月印万川，悲喜同源。",
             "千江有水千江月，万里无云万里天。",
             "月亮啊，你不说话，就是最好的回答。",
-            "今晚月色真美。——夏目漱石",
+            "今晚月色真美。 ——夏目漱石",
             "我把心事说给月亮，月亮把它变成月光，洒在你身上。"
         ];
         
@@ -169,7 +286,7 @@
                 `<p class="random-quote" id="floatingQuote">“${moonQuotes[randomIndex]}”</p>`;
         }
         
-       // 🌊 波浪形动态效果（扔石子）
+        // 🌊 波浪形动态效果（扔石子）
         function startRippleEffect() {
             const quote = document.getElementById('floatingQuote');
             
@@ -181,8 +298,6 @@
             
             // 停止之前的动画
             if (quote._animationFrame) cancelAnimationFrame(quote._animationFrame);
-            if (quote._waveTimer) cancelAnimationFrame(quote._waveTimer);
-            if (quote._timeout) clearTimeout(quote._timeout);
             
             // 重置样式
             quote.style.position = 'relative';
@@ -190,7 +305,7 @@
             quote.style.top = '0px';
             quote.style.fontSize = '18px';
             quote.style.opacity = '1';
-            quote.style.transition = 'none';  // 取消过渡，用JS控制
+            quote.style.transition = 'none';
             
             // 波浪参数
             let startTime = Date.now();
@@ -204,23 +319,19 @@
                 // 透明度从1逐渐降到0
                 quote.style.opacity = (1 - progress).toString();
                 
-                // 波浪形移动：使用正弦函数，幅度更大，速度更慢
-                // 幅度：20px（比之前大一倍，之前是3px）
-                // 速度：0.3倍 -> 周期变长，用时间控制
-                const waveAmplitude = 20; // 上下幅度20px
-                const waveSpeed = 0.002; // 速度系数（越小越慢）
+                // 波浪形移动 - 手机版幅度稍微调小一点，避免出界
+                const waveAmplitude = 15; // 手机版用15px
+                const waveSpeed = 0.002;
                 
-                // 水平方向也加一点波浪，形成真正的波浪形轨迹
-                const horizontalWave = Math.sin(elapsed * waveSpeed * 1.5) * 8; // 左右轻微摆动
-                const verticalWave = Math.sin(elapsed * waveSpeed) * waveAmplitude; // 上下主波浪
+                // 水平方向也加一点波浪
+                const horizontalWave = Math.sin(elapsed * waveSpeed * 1.5) * 6;
+                const verticalWave = Math.sin(elapsed * waveSpeed) * waveAmplitude;
                 
-                // 应用变换：同时上下左右移动，形成波浪轨迹
                 quote.style.transform = `translate(${horizontalWave}px, ${verticalWave}px)`;
                 
                 if (progress < 1) {
                     quote._animationFrame = requestAnimationFrame(waveAnimation);
                 } else {
-                    // 4秒后完全消失
                     quote.style.opacity = '0';
                     setTimeout(() => {
                         if (document.getElementById('floatingQuote')) {
@@ -235,7 +346,7 @@
             quote._animationFrame = requestAnimationFrame(waveAnimation);
         }
         
-       // 🌊 波浪形动态效果（让风带走 - 用户输入的文字）
+        // 🌊 波浪形动态效果（让风带走 - 用户输入的文字）
         function blowAwayRipple() {
             const input = document.getElementById('userInput');
             const userText = input.value.trim();
@@ -260,8 +371,6 @@
             
             // 停止之前的动画
             if (blowingText._animationFrame) cancelAnimationFrame(blowingText._animationFrame);
-            if (blowingText._waveTimer) cancelAnimationFrame(blowingText._waveTimer);
-            if (blowingText._timeout) clearTimeout(blowingText._timeout);
             
             // 重置样式
             blowingText.style.position = 'relative';
@@ -274,7 +383,7 @@
             
             // 波浪参数
             let startTime = Date.now();
-            const duration = 4000; // 也是4秒
+            const duration = 4000; // 4秒
             
             // 波浪形移动
             function waveAnimation() {
@@ -284,12 +393,12 @@
                 // 透明度逐渐降低
                 blowingText.style.opacity = (1 - progress).toString();
                 
-                // 波浪形移动
-                const waveAmplitude = 18; // 上下幅度18px（比诗句稍微小一点，更轻柔）
-                const waveSpeed = 0.0018; // 更慢的速度
+                // 波浪形移动 - 手机版幅度调小
+                const waveAmplitude = 13; // 手机版13px
+                const waveSpeed = 0.0018;
                 
                 // 水平方向也加一点波浪
-                const horizontalWave = Math.sin(elapsed * waveSpeed * 1.3) * 6;
+                const horizontalWave = Math.sin(elapsed * waveSpeed * 1.3) * 5;
                 const verticalWave = Math.sin(elapsed * waveSpeed) * waveAmplitude;
                 
                 blowingText.style.transform = `translate(${horizontalWave}px, ${verticalWave}px)`;
@@ -325,7 +434,8 @@
                 this.style.backgroundColor = `rgba(212, 182, 138, ${intensity/500})`;
             });
         }
-      // 月相显示功能 - 更新标题中的月亮
+        
+        // 月相显示功能 - 更新标题中的月亮
         function updateMoonPhase() {
             const moonData = [
                 { emoji: "🌑", name: "新月" },
@@ -344,14 +454,20 @@
             const phaseIndex = Math.floor((day % 30) / 3.75) % 8;
             
             const titleMoon = document.getElementById('titleMoon');
+            const moonHint = document.getElementById('moonHint');
+            
             if (titleMoon) {
                 titleMoon.textContent = moonData[phaseIndex].emoji;
-                // 可选：添加标题属性显示月相名称
                 titleMoon.title = moonData[phaseIndex].name;
             }
+            
+            if (moonHint) {
+                moonHint.textContent = `今日月相 · ${moonData[phaseIndex].name}`;
+            }
         }
-
-
+        
+        // 页面加载时更新月相
+        document.addEventListener('DOMContentLoaded', updateMoonPhase);
     </script>
 </body>
 </html>
