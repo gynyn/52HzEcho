@@ -116,6 +116,13 @@
         </p>
     </div>
 
+
+    <!-- 月相小彩蛋 - 放在页面底部但仍在paper外面 -->
+    <div style="text-align: center; margin-top: 20px; opacity: 0.4; font-size: 14px; color: #7f6b5a; max-width: 600px; margin-left: auto; margin-right: auto;">
+        <div style="font-size: 32px; margin-bottom: 5px;" id="moonPhaseEmoji">🌑</div>
+        <div id="moonPhaseName">新月</div>
+    </div>
+
     <script>
         // 月亮诗词与名言库
         const moonQuotes = [
@@ -168,7 +175,7 @@
                 `<p class="random-quote" id="floatingQuote">“${moonQuotes[randomIndex]}”</p>`;
         }
         
-        // 🌊 水波荡漾效果（扔石子）
+       // 🌊 波浪形动态效果（扔石子）
         function startRippleEffect() {
             const quote = document.getElementById('floatingQuote');
             
@@ -179,35 +186,47 @@
             }
             
             // 停止之前的动画
-            if (quote._animationTimer) {
-                clearInterval(quote._animationTimer);
-                clearTimeout(quote._timeout);
-            }
+            if (quote._animationFrame) cancelAnimationFrame(quote._animationFrame);
+            if (quote._waveTimer) cancelAnimationFrame(quote._waveTimer);
+            if (quote._timeout) clearTimeout(quote._timeout);
             
             // 重置样式
             quote.style.position = 'relative';
             quote.style.left = '0px';
             quote.style.top = '0px';
-            quote.style.fontSize = '18px';  // 固定字号
+            quote.style.fontSize = '18px';
             quote.style.opacity = '1';
-            quote.style.transition = 'opacity 0.3s ease';
+            quote.style.transition = 'none';  // 取消过渡，用JS控制
             
-            // 水波纹参数
+            // 波浪参数
             let startTime = Date.now();
-            const duration = 9000; // 9秒
+            const duration = 4000; // 4秒
             
-            // 用 requestAnimationFrame 实现平滑透明度变化
-            function fadeOut() {
+            // 波浪形移动
+            function waveAnimation() {
                 const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1); // 0 -> 1
+                const progress = Math.min(elapsed / duration, 1);
                 
                 // 透明度从1逐渐降到0
                 quote.style.opacity = (1 - progress).toString();
                 
+                // 波浪形移动：使用正弦函数，幅度更大，速度更慢
+                // 幅度：20px（比之前大一倍，之前是3px）
+                // 速度：0.3倍 -> 周期变长，用时间控制
+                const waveAmplitude = 20; // 上下幅度20px
+                const waveSpeed = 0.002; // 速度系数（越小越慢）
+                
+                // 水平方向也加一点波浪，形成真正的波浪形轨迹
+                const horizontalWave = Math.sin(elapsed * waveSpeed * 1.5) * 8; // 左右轻微摆动
+                const verticalWave = Math.sin(elapsed * waveSpeed) * waveAmplitude; // 上下主波浪
+                
+                // 应用变换：同时上下左右移动，形成波浪轨迹
+                quote.style.transform = `translate(${horizontalWave}px, ${verticalWave}px)`;
+                
                 if (progress < 1) {
-                    quote._animationFrame = requestAnimationFrame(fadeOut);
+                    quote._animationFrame = requestAnimationFrame(waveAnimation);
                 } else {
-                    // 9秒后完全消失
+                    // 4秒后完全消失
                     quote.style.opacity = '0';
                     setTimeout(() => {
                         if (document.getElementById('floatingQuote')) {
@@ -218,39 +237,11 @@
                 }
             }
             
-            // 启动淡出动画
-            quote._animationFrame = requestAnimationFrame(fadeOut);
-            
-            // 添加轻微的上下浮动（水波感）
-            let floatOffset = 0;
-            let floatDirection = 1;
-            
-            function floatWave() {
-                if (!quote || !quote.style) return;
-                
-                floatOffset += floatDirection * 0.2;
-                if (floatOffset > 3 || floatOffset < -3) {
-                    floatDirection *= -1;
-                }
-                
-                // 微微上下移动，像水波荡漾
-                quote.style.transform = `translateY(${floatOffset}px)`;
-                
-                quote._waveTimer = requestAnimationFrame(floatWave);
-            }
-            
-            // 启动浮动效果
-            quote._waveTimer = requestAnimationFrame(floatWave);
-            
-            // 9秒后停止浮动
-            quote._timeout = setTimeout(() => {
-                if (quote._waveTimer) {
-                    cancelAnimationFrame(quote._waveTimer);
-                }
-            }, duration);
+            // 启动波浪动画
+            quote._animationFrame = requestAnimationFrame(waveAnimation);
         }
         
-        // 🌊 水波荡漾效果（让风带走 - 用户输入的文字）
+       // 🌊 波浪形动态效果（让风带走 - 用户输入的文字）
         function blowAwayRipple() {
             const input = document.getElementById('userInput');
             const userText = input.value.trim();
@@ -274,70 +265,56 @@
             const blowingText = document.getElementById('blowingText');
             
             // 停止之前的动画
-            if (blowingText._animationTimer) {
-                clearInterval(blowingText._animationTimer);
-                clearTimeout(blowingText._timeout);
-            }
+            if (blowingText._animationFrame) cancelAnimationFrame(blowingText._animationFrame);
+            if (blowingText._waveTimer) cancelAnimationFrame(blowingText._waveTimer);
+            if (blowingText._timeout) clearTimeout(blowingText._timeout);
             
             // 重置样式
             blowingText.style.position = 'relative';
             blowingText.style.left = '0px';
             blowingText.style.top = '0px';
-            blowingText.style.fontSize = '16px';  // 固定字号
+            blowingText.style.fontSize = '16px';
             blowingText.style.opacity = '1';
-            blowingText.style.transition = 'opacity 0.3s ease';
+            blowingText.style.transition = 'none';
             blowingText.style.color = '#7f6b5a';
             
-            // 淡出动画
+            // 波浪参数
             let startTime = Date.now();
-            const duration = 9000; // 也是9秒
+            const duration = 4000; // 也是4秒
             
-            function fadeOut() {
+            // 波浪形移动
+            function waveAnimation() {
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 
+                // 透明度逐渐降低
                 blowingText.style.opacity = (1 - progress).toString();
                 
+                // 波浪形移动
+                const waveAmplitude = 18; // 上下幅度18px（比诗句稍微小一点，更轻柔）
+                const waveSpeed = 0.0018; // 更慢的速度
+                
+                // 水平方向也加一点波浪
+                const horizontalWave = Math.sin(elapsed * waveSpeed * 1.3) * 6;
+                const verticalWave = Math.sin(elapsed * waveSpeed) * waveAmplitude;
+                
+                blowingText.style.transform = `translate(${horizontalWave}px, ${verticalWave}px)`;
+                
                 if (progress < 1) {
-                    blowingText._animationFrame = requestAnimationFrame(fadeOut);
+                    blowingText._animationFrame = requestAnimationFrame(waveAnimation);
                 } else {
                     blowingText.style.opacity = '0';
                     setTimeout(() => {
                         if (document.getElementById('blowingText')) {
                             document.getElementById('quoteDisplay').innerHTML = 
-                                '<p class="random-quote" style="text-align: center; opacity: 0.6;">🍃 心事随风散去了...</p>';
+                                '<p class="random-quote" style="text-align: center; opacity: 0.6;">🍃 心事散去了...</p>';
                         }
                     }, 500);
                 }
             }
             
-            blowingText._animationFrame = requestAnimationFrame(fadeOut);
-            
-            // 水波浮动
-            let floatOffset = 0;
-            let floatDirection = 1;
-            
-            function floatWave() {
-                if (!blowingText || !blowingText.style) return;
-                
-                floatOffset += floatDirection * 0.15; // 更轻柔的浮动
-                if (floatOffset > 2 || floatOffset < -2) {
-                    floatDirection *= -1;
-                }
-                
-                blowingText.style.transform = `translateY(${floatOffset}px)`;
-                
-                blowingText._waveTimer = requestAnimationFrame(floatWave);
-            }
-            
-            blowingText._waveTimer = requestAnimationFrame(floatWave);
-            
-            // 9秒后停止
-            blowingText._timeout = setTimeout(() => {
-                if (blowingText._waveTimer) {
-                    cancelAnimationFrame(blowingText._waveTimer);
-                }
-            }, duration);
+            // 启动波浪动画
+            blowingText._animationFrame = requestAnimationFrame(waveAnimation);
         }
         
         // 清空输入框
@@ -354,36 +331,33 @@
                 this.style.backgroundColor = `rgba(212, 182, 138, ${intensity/500})`;
             });
         }
+      // 月相显示功能
+        function updateMoonPhase() {
+            const moonData = [
+                { emoji: "🌑", name: "新月" },
+                { emoji: "🌒", name: "蛾眉月" },
+                { emoji: "🌓", name: "上弦月" },
+                { emoji: "🌔", name: "盈凸月" },
+                { emoji: "🌕", name: "满月" },
+                { emoji: "🌖", name: "亏凸月" },
+                { emoji: "🌗", name: "下弦月" },
+                { emoji: "🌘", name: "残月" }
+            ];
+            
+            const today = new Date();
+            const day = today.getDate();
+            // 将一个月30天分成8个阶段
+            const phaseIndex = Math.floor((day % 30) / 3.75) % 8;
+            
+            const moonEmoji = document.getElementById('moonPhaseEmoji');
+            const moonName = document.getElementById('moonPhaseName');
+            
+            if (moonEmoji) moonEmoji.textContent = moonData[phaseIndex].emoji;
+            if (moonName) moonName.textContent = moonData[phaseIndex].name;
+        }
+        
+        // 页面加载时更新月相
+        document.addEventListener('DOMContentLoaded', updateMoonPhase);
     </script>
-
-    <!-- 悄悄加一个月相图标 -->
-<div style="text-align: center; margin-top: 10px; opacity: 0.3;">
-    <span id="moonPhase">🌑</span>
-</div>
-
-<!-- 月相小彩蛋 -->
-<div style="text-align: center; margin-top: 20px; opacity: 0.3; font-size: 24px;" id="moonPhase">
-    🌑
-</div>
-
-<script>
-    // 月相显示功能
-    function updateMoonPhase() {
-        const moonEmojis = ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"];
-        const today = new Date();
-        // 农历日期模拟：每个月15号左右是满月
-        const day = today.getDate();
-        // 将一个月30天分成8个阶段，每个阶段约3.75天
-        const phaseIndex = Math.floor((day % 30) / 3.75) % 8;
-        document.getElementById('moonPhase').textContent = moonEmojis[phaseIndex];
-    }
-    
-    // 页面加载时更新月相
-    updateMoonPhase();
-    
-    // 也可以每分钟检查一次（如果需要自动更新）
-    // setInterval(updateMoonPhase, 60000);
-</script>
-
 </body>
 </html>
