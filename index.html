@@ -95,7 +95,8 @@
 </head>
 <body>
     <div class="paper">
-        <h1>📝 留下你的声音，月亮是你的倾听者，回声是答案</h1>
+        <h1>
+            <span id="titleMoon">🌑</span> 留下你的声音，月亮是你的倾听者，回声是答案</h1>
         
         <!-- 随机句子显示区 -->
         <div class="quote-box" id="quoteDisplay">
@@ -114,13 +115,6 @@
         <p style="text-align: center; color: #aaa; font-size: 14px; margin-top: 30px;">
             你的每一句话，都只留在这个页面里，关闭即消失
         </p>
-    </div>
-
-
-    <!-- 月相小彩蛋 - 放在页面底部但仍在paper外面 -->
-    <div style="text-align: center; margin-top: 20px; opacity: 0.4; font-size: 14px; color: #7f6b5a; max-width: 600px; margin-left: auto; margin-right: auto;">
-        <div style="font-size: 32px; margin-bottom: 5px;" id="moonPhaseEmoji">🌑</div>
-        <div id="moonPhaseName">新月</div>
     </div>
 
     <script>
@@ -331,7 +325,7 @@
                 this.style.backgroundColor = `rgba(212, 182, 138, ${intensity/500})`;
             });
         }
-      // 月相显示功能
+      // 月相显示功能 - 更新标题中的月亮
         function updateMoonPhase() {
             const moonData = [
                 { emoji: "🌑", name: "新月" },
@@ -349,15 +343,15 @@
             // 将一个月30天分成8个阶段
             const phaseIndex = Math.floor((day % 30) / 3.75) % 8;
             
-            const moonEmoji = document.getElementById('moonPhaseEmoji');
-            const moonName = document.getElementById('moonPhaseName');
-            
-            if (moonEmoji) moonEmoji.textContent = moonData[phaseIndex].emoji;
-            if (moonName) moonName.textContent = moonData[phaseIndex].name;
+            const titleMoon = document.getElementById('titleMoon');
+            if (titleMoon) {
+                titleMoon.textContent = moonData[phaseIndex].emoji;
+                // 可选：添加标题属性显示月相名称
+                titleMoon.title = moonData[phaseIndex].name;
+            }
         }
-        
-        // 页面加载时更新月相
-        document.addEventListener('DOMContentLoaded', updateMoonPhase);
+
+
     </script>
 </body>
 </html>
